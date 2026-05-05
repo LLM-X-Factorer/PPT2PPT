@@ -2,6 +2,20 @@
 
 把内容密集、emoji 凑色块的工作汇报 pptx，重新设计为沉稳商务风的可编辑 pptx。
 
+![cover](docs/preview/page-01.png)
+
+## 预览
+
+| 产品矩阵 | 年度 OKR |
+|---|---|
+| ![](docs/preview/page-04.png) | ![](docs/preview/page-06.png) |
+
+| Q1 进度（真甘特图） | Q2 计划 |
+|---|---|
+| ![](docs/preview/page-07.png) | ![](docs/preview/page-08.png) |
+
+> 截图来自 LibreOffice 渲染，中文回退到了仿宋字体；用 PowerPoint / Keynote 打开是雅黑 / 苹方。
+
 ## 设计原则
 
 - **可编辑优先**：输出真矢量 pptx，不是图片化导出。打开后可继续在 PowerPoint / Keynote 里改字、调位置。
@@ -58,8 +72,20 @@ python3 -m venv .venv
 
 - `content.py` — 结构化内容数据源（每页对应一个字典/列表）
 - `redesign.py` — 设计系统常量 + 通用绘制工具 + 各页面生成函数 + 主流程
+- `docs/preview/` — README 用的 demo 截图
 
 ## 已知限制
 
 - LibreOffice 转 PDF 时中文会回退到非雅黑字体；用 PowerPoint / Keynote 打开是正常的雅黑/苹方。
 - 当前内容硬编码在 `content.py`，换 PPT 需要重写数据。下一步可以做成自动解析任意 pptx → 结构化数据。
+
+## 路线图
+
+- [ ] 自动解析任意 pptx → 结构化数据（免去手写 content.py）
+- [ ] 支持图片/图表注入（当前是纯文字版式）
+- [ ] 提供更多风格主题（科技感、暖色系等）
+- [ ] CLI：`ppt2ppt input.pptx --theme calm-business --out output.pptx`
+
+## 协议
+
+MIT
