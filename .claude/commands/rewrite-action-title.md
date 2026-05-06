@@ -5,7 +5,7 @@ argument-hint: [tone] · 可选 internal | balanced | external · 默认 balance
 
 # /rewrite-action-title
 
-把当前 `content.py` 按 Action Title 原则 + tone 力度档位重写,输出到 `content_action_<tone>.py`,并在 `rewrite_audit.md` 末尾追加本次审计。
+把当前 `content.py` 按 Action Title 原则 + tone 力度档位重写,输出到 `content_action_<tone>.py`,并在 `docs/audit.md` 末尾追加本次审计。
 
 ## 触发输入
 
@@ -60,7 +60,7 @@ Write 完整重写后的 Python 文件到 `content_action_<tone>.py`(保持 sche
 
 ### 6. 追加审计
 
-在 `rewrite_audit.md` 末尾追加一段(用 Edit 工具,不要用 Write 覆盖):
+在 `docs/audit.md` 末尾追加一段(用 Edit 工具,不要用 Write 覆盖):
 
 ```markdown
 

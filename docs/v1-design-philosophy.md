@@ -98,7 +98,7 @@ v1 以 **Claude Code Skill** 形态交付,不是 Python 脚本:
 
 - [`prompts/rewrite_action_title.md`](../prompts/rewrite_action_title.md) — 单一真相源 prompt 模板(规则、词典、红线)
 - [`.claude/commands/rewrite-action-title.md`](../.claude/commands/rewrite-action-title.md) — slash command 入口
-- 用户输入 `/rewrite-action-title balanced`,Claude Code 加载这两份文件,读 `content.py`,按 prompt 重写,写入 `content_action_<tone>.py`,追加 `rewrite_audit.md`
+- 用户输入 `/rewrite-action-title balanced`,Claude Code 加载这两份文件,读 `content.py`,按 prompt 重写,写入 `content_action_<tone>.py`,追加 `docs/audit.md`
 
 为什么不写 Python 脚本调 API?
 
@@ -116,7 +116,7 @@ content_action_external.py     skill mock 三档之一
 content_action_internal.py     skill mock 三档之一
 prompts/rewrite_action_title.md   prompt 模板
 .claude/commands/rewrite-action-title.md   slash command
-rewrite_audit.md               每次重写的审计日志
+docs/audit.md                  每次重写的审计日志
 docs/v1-design-philosophy.md   本文件
 ```
 

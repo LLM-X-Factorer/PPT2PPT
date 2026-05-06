@@ -5,7 +5,7 @@
 - 标题不再是结构标签（"产品矩阵"），而是结论判断（"标准版扛着、两端缺路径"）
 - 副标题承接结论的关键数字或时间锚点
 - bullet/items 等承诺类内容不动（OKR 的 KR、甘特任务名）
-- 详见 rewrite_audit.md
+- 详见 docs/audit.md
 """
 
 COVER = {
