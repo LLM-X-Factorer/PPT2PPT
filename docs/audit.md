@@ -449,3 +449,68 @@ prompt 模板 v2(commit 4cb38ed 后)在 demo + 真实数据下都通过 balanced
 
 - internal / external 档真实数据验证(本次未跑,可下次按需补)
 - 真实数据 commit 隔离已通过 gitignore `*_real*.py` 规则保护
+
+---
+
+## v2 演讲面真实数据验证 · 2026-05-06 · tone=internal
+
+> 仅记录元信息。真实业务判断 / 数据 / 产物文件不进 git。
+
+### 流程
+
+同 balanced 那次的 9 步流程(备份 → cp → v1 重写 → v2 演讲面 → 渲染 → 视觉验证 → 恢复 demo → 清理 → git diff 0 污染)。
+
+### 验证结论
+
+| 维度 | 结果 |
+|---|---|
+| internal 红线 · 容许尖锐 | ✓ 力度词覆盖(全压/一条腿/赠品包装/还在卖课题/等天降流量/接单/还没起来) |
+| internal 红线 · 不容许内部黑话 | ✓ 没出现"办会破壁"那种缩写;每个表达都是普通中国互联网人秒懂 |
+| items 力度联动 title | ✓ KEYPOINT.points 三档同力度,无精神分裂 |
+| 两面叙事一致 | ✓ points 与 v1 PROBLEMS.items 一字不差;COVER / CLOSING 一字不差 |
+| 详情面 15 页字数 | ✓ 全部单行容纳(详情面 24pt 字号容量充足) |
+| 演讲面 4 个 KEYPOINT.title 字数 | ✓ 全部单行容纳 |
+| 演讲面 2 个 MILESTONE.title 字数 | ✗ **暴露 2 个 prompt 漏洞**(见下) |
+
+### 暴露的 prompt 漏洞 + 修补
+
+#### 漏洞 1 · v1 Q2 = 5 group 时,MILESTONE.title 直接复用导致 5 元素冒号子句换行
+
+- 触发:真实数据 PRODUCT_Q2 是 5 group(demo 只有 3),v1 PRODUCT_Q2.title = "Q2 必打五件事:GEO + V7 + AI 助教 + 沙龙 + 文创"
+- 现象:v2 PRODUCT_MILESTONE.title 直接复用 → 40pt 大字版式视觉总长溢出 → 换行截断
+- 根因:演讲面 MILESTONE 是 3 lane 卡片,title 数值与 lane 数应同构;5 元素冒号子句天然超宽
+
+**修补**(prompts/rewrite_presentation.md 规则 3):
+
+> 当 v1 Q2 是 5 group 时,MILESTONE.title 必须改为 3 元素冒号子句,呼应 3 lane 命名(不是 5 group 命名)。
+
+例:`"Q2 必打五件事:GEO + V7 + AI 助教 + 沙龙 + 文创"` → `"Q2 必打三事:引流 · 爆品 · 价值"`
+
+#### 漏洞 2 · 冒号子句单元素 ≥ 4 中文字时,3 元素也溢出
+
+- 触发:真实数据 BRAND_Q2 是 3 group,但 lane 名"IP 引流层"在 title 缩写后是"IP 引流"(4 字符)
+- 现象:v2 BRAND_MILESTONE.title = "Q2 必跑三链路:IP 引流 + 高客单 + 运营闭环" → 末字"环"换行
+- 对照:demo "双 IP · 高客单 · 运营闭环" 中"双 IP" 2 字 → 单行容纳
+
+**修补**(prompts/rewrite_presentation.md 规则 4 字数约束):
+
+> 冒号子句紧凑性硬约束:单元素 ≤ 3 中文字 + 整体 ≤ 12 字符。元素超 3 字时必须缩写。分隔符优先 ` · `(中点)> ` + `(加号占位更宽)。
+
+例:`"IP 引流 + 高客单 + 运营闭环"` → `"IP · 高客单 · 闭环"`
+
+### 修补后再渲染
+
+修补 prompt + 重写 v2 产物(只动两个 MILESTONE.title)→ 重渲染 → 第 3 / 5 页两个 MILESTONE.title 全部单行容纳 ✓
+
+### 影响范围
+
+- prompt 修补**只影响 v2 演讲面 MILESTONE.title 写法**,不影响 v1 详情面任何字段
+- v1 PRODUCT_Q2.title 仍然是 "Q2 必打五件事:..."(详情面 5 group 自然展开)
+- v2 演讲面 PRODUCT_MILESTONE.title 是 "Q2 必打三事:..."(演讲面 3 lane 自然展开)
+- 两面"五事 / 三事"不矛盾:对应不同密度版本的不同分组数,各自与各自版面卡片数同构
+
+### 后续
+
+- external 档真实数据验证(下一步)
+- 修补后 prompt 在 demo 上重跑 internal 档,确认 demo 仍然通过(可选)
+- v0.3.0 release 评估(待 external 完成后)
