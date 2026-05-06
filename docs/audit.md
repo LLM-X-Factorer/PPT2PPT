@@ -406,3 +406,46 @@ prompt 模板 v2 通过 balanced 档 mock 验证。下一步可以:
 prompt 模板 v2 通过完整三档 mock 验证。下一步可以:
 - 真实数据(content_real.py)上跑通完整链路 v1 + v2
 - 真实数据若发现新 prompt 漏洞,迭代 prompt 模板
+
+---
+
+## v2 演讲面真实数据验证 · 2026-05-06 · tone=balanced
+
+> 仅记录元信息。真实业务判断 / 数据 / 产物文件不进 git。
+
+### 流程
+
+1. 备份 demo 状态到 /tmp(content.py / content_action_balanced.py / content_presentation.py / content_presentation_balanced.py)
+2. cp content_real.py content.py(切换为真实数据)
+3. 按 v1 prompt 模板手写真实数据 balanced 重写 → content_action_real_balanced.py(gitignored)
+4. 按 v2 prompt 模板手写演讲面提炼 → content_presentation_real_balanced.py(gitignored)
+5. cp 真实重写产物到 content.py / content_presentation.py,跑 redesign.py + redesign_presentation.py
+6. 渲染双 deck pptx,转 PDF + PNG 看视觉
+7. cp /tmp 备份恢复 demo 状态
+8. rm 真实产物 pptx/pdf/png(只留 *_real_*.py 在本地,gitignored)
+9. git diff 确认 demo 文件 0 污染
+
+### 验证结论
+
+| 维度 | 结果 |
+|---|---|
+| 真实数据 schema 完整性 | ✓ 15 个 dict 完整(COVER / TOC / SECTION_* / PRODUCT_*(MATRIX/PROBLEMS/OKR/Q1/Q2) / BRAND_*(MATRIX/PROBLEMS/OKR/Q1/Q2) / CLOSING) |
+| v1 重写 schema 不破 | ✓ redesign.py 在 v1 重写产物上跑通 15 页 |
+| v2 演讲面 6 页骨架适配真实数据 | ✓ 真实业务的产品/品牌矩阵都映射到 6 页骨架,不需要改 schema |
+| 真实数据 5 group → 3 lane 合并规则 | ✓ 产品 5 group(引流/系统班/工具/沙龙/文创)合并到 3 lane(引流/爆品/价值);品牌 3 group 直接对应 3 lane |
+| KEYPOINT.title 字数硬约束(中文 ≤ 5 字 if 长冒号子句) | ✓ 真实数据 PRODUCT_MILESTONE.title 中文部分 = "Q2 五事并进"(4 字 + 5 元素冒号子句),单行容纳 |
+| MILESTONE.lane outcome 单段 ≤ 7 字 | ✓ 真实数据各 lane outcome 全部单行容纳 |
+| 详情面甘特图(8 task)、Q2 计划(5 group × 3 phase) | ✓ 全部单行容纳,无截断 |
+
+### 未暴露的 prompt 漏洞
+
+真实数据下没有触发新的字数 / 结构 / tone 边界问题。三档对照表里"内部黑话"边界不适用(本次只跑 balanced)。
+
+### 影响范围
+
+prompt 模板 v2(commit 4cb38ed 后)在 demo + 真实数据下都通过 balanced 档验证。**未触发任何 prompt 修补需求**。
+
+### 后续
+
+- internal / external 档真实数据验证(本次未跑,可下次按需补)
+- 真实数据 commit 隔离已通过 gitignore `*_real*.py` 规则保护
