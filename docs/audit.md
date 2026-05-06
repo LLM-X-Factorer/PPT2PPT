@@ -514,3 +514,47 @@ prompt 模板 v2(commit 4cb38ed 后)在 demo + 真实数据下都通过 balanced
 - external 档真实数据验证(下一步)
 - 修补后 prompt 在 demo 上重跑 internal 档,确认 demo 仍然通过(可选)
 - v0.3.0 release 评估(待 external 完成后)
+
+---
+
+## v2 演讲面真实数据验证 · 2026-05-06 · tone=external
+
+> 仅记录元信息。真实业务判断 / 数据 / 产物文件不进 git。
+
+### 流程
+
+同 internal / balanced 那次的 9 步流程。本次使用的是 internal 修补后的 v2 prompt 模板(commit `1a0618d`)。
+
+### 验证结论
+
+| 维度 | 结果 |
+|---|---|
+| external 红线 · 主谓宾结构保留 | ✓ 所有 title 都有动词("领跑/布局"、"驱动 Q3 增长"、"建设中/升级"、"三事并进"、"三链路升级") |
+| external 红线 · 不退化为信息墙 | ✓ 没出现"四层级产品组合"那种纯名词列表;每个判断都有动作或方向 |
+| 把"问题"重新框架为"机会和动作" | ✓ "硬伤" → "引擎驱动";"完全没方法论" → "方法论建设中";"等天降流量" → "种子流量体系完善中" |
+| items 力度联动 title | ✓ KEYPOINT.points 三档同力度,无精神分裂 |
+| 两面叙事一致 | ✓ points 与 v1 PROBLEMS.items 一字不差;COVER / CLOSING 一字不差 |
+| 详情面 15 页字数 | ✓ 全部单行容纳(包括 BRAND_MATRIX 18 字 / BRAND_Q1 17 字 长 title) |
+| 演讲面 KEYPOINT.title 字数 | ✓ 全部单行容纳(BRAND_KEYPOINT 17 字也单行) |
+| 演讲面 MILESTONE.title 字数 | ✓ 全部单行容纳(用 internal 修补后的规则:5 group → 3 元素 + 单元素 ≤ 3 字) |
+
+### 未暴露新 prompt 漏洞
+
+internal 修补后的字数硬约束(规则 3 + 规则 4)在 external 真实数据下未触发新边界问题。**修补充分,无需迭代。**
+
+### 三档对比表(v2 演讲面 · 真实数据 · 关键页)
+
+为保护真实业务判断不入 git,本表只列 demo 已公开的字段对照(不展示真实数据具体判断):
+
+- 三档共享同一份 v1 group / KR / 任务名 / 数据 ✓(力度只滑修辞,不动事实)
+- internal / balanced / external 各自的修辞特征鲜明 ✓
+- KEYPOINT.points 三档头/desc 力度联动 title ✓
+- MILESTONE.title 三档全部通过修补后字数硬约束 ✓
+
+### 影响范围
+
+prompt 模板 v2(commit `1a0618d` 后)在 demo + 真实数据下都通过 **balanced + internal + external 三档** 完整验证。**v2 演讲面 prompt 模板进入稳定状态**,可作为 v0.3.0 release 的 ship-ready 基础。
+
+### 后续
+
+- v0.3.0 release(internal 修补 + 三档真实数据闭环)
