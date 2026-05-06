@@ -9,6 +9,7 @@ __pycache__/
 *.pdf
 *.pptx
 preview-*.png
+preview_pres-*.png
 content_real.py
 content.original.py
 *_real.md
