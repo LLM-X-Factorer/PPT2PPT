@@ -8,4 +8,8 @@ __pycache__/
 /tmp/
 *.pdf
 *.pptx
+preview-*.png
 content_real.py
+content.original.py
+*_real.md
+*_real.py
