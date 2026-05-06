@@ -128,7 +128,7 @@ prompt 设计上需要:
 
 1. [`docs/v1-design-philosophy.md`](v1-design-philosophy.md)
 2. [`prompts/rewrite_action_title.md`](../prompts/rewrite_action_title.md)
-3. [`rewrite_audit.md`](../rewrite_audit.md) 末尾的三档对比表
+3. [`audit.md`](audit.md) 末尾的三档对比表
 
 ### Step 1: 拍板形态
 
@@ -197,13 +197,16 @@ prompt 设计上需要:
 
 ## 成功标准
 
-v2 完成的标志(下一会话结束时如果达到这些标志,即可视为 v2 v0 成功):
+v2 v0 完成状态:
 
-- [ ] 同一份 demo 数据产出两份 pptx: `output-presentation.pptx`(5-7 页) + `output-appendix.pptx`(15 页)
-- [ ] 演讲面每页一个观点 + 不超过 3 个支撑 bullet
-- [ ] 详情面保留 v1 的全部信息密度
-- [ ] 两面的 Action Title / 判断完全一致
-- [ ] 工具化封装为 `/rewrite-presentation` slash command,可独立调用
+- [x] 同一份 demo 数据产出两份 pptx: `output-presentation.pptx`(6 页) + `output.pptx`(15 页)
+- [x] 演讲面每页一个观点 + 不超过 3 个支撑 bullet
+- [x] 详情面保留 v1 的全部信息密度(`redesign.py` 一行未动)
+- [x] 两面的 Action Title / 判断完全一致(事实层禁区 + 字数硬约束 + mock 验证)
+- [x] 工具化封装为 `/rewrite-presentation` slash command,可独立调用(balanced 档 mock 验证通过)
 - [ ] 真实数据(content_real.py)上跑通至少一次,验证不只在 demo 上 work
+- [ ] internal / external 两档 mock 验证(类比 v1 commit `44cfa7e`)
 
-如果到 v2 v0 完成时,你拿着两份 PPT 上台讲一次,能感受到"演讲面服务叙事 / 详情面给老板看"的张力被解决——v2 就达成了"PPT 应该做减法"的初心。
+v2 v0 形态决策 = **A 双独立 pptx**。新增独立文件 `redesign_presentation.py` / `prompts/rewrite_presentation.md` / `.claude/commands/rewrite-presentation.md`,不动 v1 的 `redesign.py` 和现有 skill。
+
+如果你拿着两份 PPT 上台讲一次,能感受到"演讲面服务叙事 / 详情面给老板看"的张力被解决——v2 就达成了"PPT 应该做减法"的初心。
