@@ -149,3 +149,41 @@
 3. **数字硬编码进标题**（"9 个账号 / 4 跑款"）：每次数据变都要重写标题。如果工具化，需要考虑标题模板 + 数据动态填充。
 
 这三点是 v1 工具化时要解决的设计问题。
+
+---
+
+## v1 自动重写 · 2026-05-06 · tone=balanced(mock 测试)
+
+- 输入: content.py(原始 demo)
+- 输出: content_action_balanced.py
+- 触发: /rewrite-action-title balanced 的 mock 模拟(无 API,Claude Code 直接执行)
+
+### 与已 commit 的 content_action.py 的关键差异
+
+1. **PRODUCT_Q1 数字修正**:
+   - v0 commit: "Q1 节奏在轨:**3** 项已交付 · **5** 项进行中"
+   - v1 mock: "Q1 节奏在轨:**2** 项交付 · **3** 项进行中"
+   - 实际数据:done=2(积分系统/首场沙龙)、doing=3(Onboarding/标准版功能/销售SOP)、wait=3
+   - **prompt 模板"已知边界 #1 数字要实际数过"起作用了** — 这是 mock 测试发现的真实 bug
+
+2. **PROBLEMS 页 head 力度回调**:
+   - v0 commit(偏 internal):"试用用户走丢在第 3 步" / "和竞品长得一样"
+   - v1 mock(更 balanced):"试用用户付费转化缺路径" / "专业版与竞品高度同质"
+   - prompt 力度词典里"balanced = 缺/待/未跑通/在轨/守/续/破",回归这个范围
+
+3. **BRAND_PROBLEMS title 力度回调**:
+   - v0 commit:"传播没方法论 · 新品冷启动靠运气"(internal 词:没/靠运气)
+   - v1 mock:"传播待沉淀方法论 · 新品冷启动待破局"(balanced 词:待)
+
+4. **TOC 第三字段更紧凑**:压到 ≤12 汉字遵守 prompt 已知边界 #4
+
+5. **PRODUCT_OKR title 用层名而非通用词**:
+   - v0:"免费引流 + 标准守城 + 企业开荒"
+   - v1:"入门引流 + 标准守城 + 企业开荒"(对应 tier 名"入门层")
+
+### Mock 测试结论
+
+- prompt 模板能稳定复现 v1 设计哲学(B+A)
+- 但 v0 手写时偏 internal,v1 mock 给出真正的 balanced 输出 — 说明 prompt 词典约束有效
+- 发现 v0 一个数字 bug — 验证"已知边界"清单的工程价值
+- 力度边界比预想窄,prompt 已显式列出"balanced 不是平均值,是独立档位",mock 输出确认这条约束生效
