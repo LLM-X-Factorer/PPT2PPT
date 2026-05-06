@@ -65,13 +65,22 @@ pdftoppm -r 150 output-presentation.pdf preview_pres -png
 | 观点页(大字 Action Title + 3 numbered points) | `slide_keypoint` |
 | 节奏页(大字 Action Title + 3 lane 卡片) | `slide_milestone` |
 
-## v2 演讲面字数硬约束
+## v2 演讲面字数硬约束(v0.3.0 累计三轮硬化)
 
-`slide_milestone` 的 lane 卡片在版式里有空间限制,超字数会换行截断:
+演讲面 40pt 大字版式空间紧,超字数会换行截断。完整规则见 `prompts/rewrite_presentation.md`,这里是踩过的坑:
+
+**MILESTONE.lane(卡片内)**:
 - `lane.task` ≤ **14 中文字**
-- `lane.outcome` 单段 ≤ **8 中文字**,三段总长(箭头不计)≤ **26 字**
+- `lane.outcome` 单段 ≤ **7 中文字**,三段总长(箭头不计)≤ **22 字**
+- 合并 lane 时若 v1 两个 group.task 原文串联超字数,**必须改写为统一动作**(例:"V7 迭代 + AI 辅助能力部署" → "V7 + AI 辅助上线")
 
-合并 lane 时若 v1 两个 group.task 原文串联超字数,**必须改写为统一动作**(例:"V7 迭代 + AI 辅助能力部署" → "V7 + AI 辅助上线")。详见 `prompts/rewrite_presentation.md` 规则 4。
+**KEYPOINT.title / MILESTONE.title(大字标题)**:
+- 中文部分 ≤ **5 字** if 后接长冒号子句;≤ **15 字** if 无冒号子句
+- 冒号子句**单元素 ≤ 3 中文字 + 整体 ≤ 12 字符**(单元素超 3 字必须缩写,例:"IP 引流" → "IP")
+- 分隔符优先级 ` · ` > ` + `(中点占位窄于加号)
+- **当 v1 Q2 是 5 group → 3 lane 时,MILESTONE.title 冒号子句必须按 3 lane 名写**(例:v1 "Q2 必打五件事:GEO + V7 + AI 助教 + 沙龙 + 文创" → v2 "Q2 必打三事:引流 · 爆品 · 价值")
+
+**两面"五事 / 三事"不矛盾**:对应不同密度版本的不同分组数。详情面 5 group 自然展开 5 元素;演讲面 3 lane 自然展开 3 元素。各自与各自版面卡片数同构。
 
 ## 常见坑
 
