@@ -68,12 +68,12 @@ BRAND_MILESTONE = {
         {
             "name": "IP 引流层",
             "task": "双 IP 账号引流跑通",
-            "outcome": "内容模型测试 → 公域→私域加粉 3,000 → 沉淀《IP 内容 SOP》",
+            "outcome": "模型测试 → 加粉 3,000 → 沉淀 IP SOP",
         },
         {
             "name": "高客单转化",
             "task": "高客单产品转化跑通",
-            "outcome": "全链路验证 → 成交 ≥ 30 单 → 优化销售 SOP",
+            "outcome": "全链路验证 → ≥ 30 单 → 销售 SOP",
         },
         {
             "name": "运营全链路",

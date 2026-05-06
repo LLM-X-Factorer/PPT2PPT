@@ -322,3 +322,87 @@ prompt 模板 v2 通过 balanced 档 mock 验证。下一步可以:
 - 跑 internal / external 档 mock 验证
 - 用真实数据(content_real.py)过一遍
 - 发布为 Claude Code Skill
+
+---
+
+## v2 演讲面 mock 验证 · 2026-05-06 · tone=internal & external
+
+### Internal 档
+
+- 输入: content_action_internal.py
+- 输出: content_presentation_internal.py
+- 4 个 KEYPOINT/MILESTONE title:
+  - PRODUCT_KEYPOINT: "营收全压标准版,Q3 必须破两端"(13 字)
+  - PRODUCT_MILESTONE: "Q2 必打三件事:Onboarding · V7 · AI 辅助"
+  - BRAND_KEYPOINT: "传播完全没方法论 · 新品冷启动全靠运气"(15 字 · 直接复用 v1)
+  - BRAND_MILESTONE: "Q2 必跑三链路:双 IP · 高客单 · 运营闭环"
+- internal 红线核对: 力度尖锐(全压/没/靠运气/吃完红利/拉跨/全走丢) · 没滑成黑话 ✓
+- 两面 tone 一致性: 已对齐(输入是 internal 档详情面)
+
+### External 档
+
+- 输入: content_action_external.py
+- 输出: content_presentation_external.py
+- 4 个 KEYPOINT/MILESTONE title:
+  - PRODUCT_KEYPOINT: "标准版稳步领跑,两端持续布局"(14 字 · 直接复用 v1 PRODUCT_MATRIX.title)
+  - PRODUCT_MILESTONE: "Q2 推进三主线:Onboarding · V7 · AI 辅助"
+  - BRAND_KEYPOINT: "传播方法论建设中 · 新品冷启动机制升级"(15 字 · 直接复用 v1)
+  - BRAND_MILESTONE: "Q2 三链路升级:双 IP · 高客单 · 运营闭环"(直接复用 v1)
+- external 红线核对: 主谓宾结构完整 · 没退化为信息墙 ✓
+- 两面 tone 一致性: 已对齐(输入是 external 档详情面)
+
+### 三档 mock 同时暴露的 prompt 漏洞 + 修补
+
+跑出三档后渲染 pptx,**视觉发现两类截断**:
+
+#### 漏洞 1 · MILESTONE.title 中文部分 ≥ 6 字 + 长冒号子句溢出
+- internal 原 mock "Q2 三件事必须打透:Onboarding · V7 · AI 辅助"(7 字 + 冒号子句)→ 换行
+- external 原 mock "Q2 三大主线推进:Onboarding · V7 · AI 辅助"(6 字 + 冒号子句)→ 换行
+- internal 原 mock "Q2 三链路必须跑通:双 IP · 高客单 · 运营闭环"(7 字 + 冒号子句)→ 换行
+
+**修补**: prompt 加 KEYPOINT/MILESTONE.title 字数约束:
+- 中文部分 ≤ 5 字 if 后接长冒号子句
+- 中文部分 ≤ 15 字 if 没冒号子句
+- 各档实际改写:
+  - internal: "三件事必须打透"(7) → "必打三件事"(5);"三链路必须跑通"(7) → "必跑三链路"(5)
+  - external: "三大主线推进"(6) → "推进三主线"(5)
+
+#### 漏洞 2 · BRAND_MILESTONE 全部 lane 的 outcome 视觉超单行容纳
+连 master 一直就有的 bug,本次三档 mock 暴露:
+
+- 原 IP 引流层: "内容模型测试 → 公域→私域加粉 3,000 → 沉淀《IP 内容生产 SOP》" → 换行
+- 原 高客单转化: "全链路验证 → 成交 ≥ 30 单 → 优化销售 SOP" → 换行
+
+**修补**:
+- prompt 加"专有产物名简化"规则:产物简称含全角《》超限,允许在演讲面省略形容词或修饰
+- prompt 加"三段总长视觉单行容纳"规则:即使每段 ≤ 7 字,加起来含数字+英文+箭头也可能超
+- prompt outcome 单段从 ≤ 8 字 改为 ≤ 7 字 + 三段总长 ≤ 22 字
+- 各档实际改写:
+  - IP 引流层 outcome 全部统一: "模型测试 → 加粉 3,000 → 沉淀 IP SOP"(各 4/5/5 字)
+  - 高客单 outcome 全部统一: "全链路验证 → ≥ 30 单 → 销售 SOP"(各 5/4/4 字)
+  - master 也跟改,保持四个文件一致
+
+修补后三档全部 mock 渲染单行容纳,无截断 ✓
+
+### 三档对比表(v2 演讲面 · 关键页)
+
+| 字段 | external | balanced | internal |
+|---|---|---|---|
+| COVER subtitle | 标准版稳步领跑 · 两端持续布局 · 品牌升级方法论 | 标准版守营收 · 两端待破局 · 品牌求方法论 | 标准版一条腿扛营收 · 两端没跑通 · 品牌靠运气 |
+| PRODUCT_KEYPOINT title | 标准版稳步领跑,两端持续布局 | 增长压在标准版上,Q3 必须破两端 | 营收全压标准版,Q3 必须破两端 |
+| PRODUCT_KEYPOINT subtitle | 三大引擎驱动 Q3 增长 | 三个卡点决定 Q3 增速 | 三个硬伤决定 Q3 能不能涨 |
+| PRODUCT_MILESTONE title | Q2 推进三主线:... | Q2 三事并进:... | Q2 必打三件事:... |
+| BRAND_KEYPOINT title | 传播方法论建设中 · 新品冷启动机制升级 | 传播待沉淀方法论 · 新品冷启动待破局 | 传播完全没方法论 · 新品冷启动全靠运气 |
+| BRAND_KEYPOINT subtitle | 三大举措支撑 Q3 品牌增长 | 三件事决定品牌能否撑起 Q3 增长 | 三件事不解决,Q3 品牌涨不动 |
+| BRAND_MILESTONE title | Q2 三链路升级:... | Q2 三链路并进:... | Q2 必跑三链路:... |
+
+### 三档同时验证的设计假设
+
+1. **力度只滑修辞,不动事实** — 三档共享同一份 PRODUCT_Q2 / BRAND_Q2 lane 数据(outcome 极简化版)和 PROBLEMS items 事实层 ✓
+2. **balanced 不是平均值** — 各有特征:external "稳步/持续/建设中/升级" · balanced "守/破局/求/在/事并进" · internal "全压/没/靠运气/必打/必跑" ✓
+3. **演讲面 6 页骨架在三档下都成立** — 没有任何档要求"加一页"或"减一页" ✓
+4. **字数硬约束对所有档都生效** — 修补后三档都通过 ✓
+
+prompt 模板 v2 通过完整三档 mock 验证。下一步可以:
+- 真实数据(content_real.py)上跑通完整链路 v1 + v2
+- 真实数据若发现新 prompt 漏洞,迭代 prompt 模板
