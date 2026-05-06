@@ -261,3 +261,64 @@ prompt 模板 v1 通过完整三档 mock 验证。下一步可以:
 - 用真实数据(content_real.py)再过一遍三档
 - 把 prompt 模板做最后校准(如果有发现)
 - 发布为 Claude Code Skill
+
+---
+
+## v2 演讲面 mock 验证 · 2026-05-06 · tone=balanced
+
+- 输入: content_action_balanced.py(v1 自动 balanced 详情面)
+- 输出: content_presentation_balanced.py
+- 演讲面 6 页骨架:
+  - PRODUCT_KEYPOINT.title: "增长压在标准版上,Q3 必须破两端"(从 v1 PRODUCT_MATRIX.title + 行动指向词"必须")
+  - PRODUCT_MILESTONE.title: "Q2 三事并进:Onboarding · V7 · AI 辅助"(直接复用 v1 PRODUCT_Q2.title)
+  - BRAND_KEYPOINT.title: "传播待沉淀方法论 · 新品冷启动待破局"(直接复用 v1 BRAND_PROBLEMS.title)
+  - BRAND_MILESTONE.title: "Q2 三链路并进:双 IP · 高客单 · 运营闭环"(直接复用 v1 BRAND_Q2.title)
+- group 合并方式:
+  - 入门层(O1) → 入门层 lane(单 group 直接成 lane)
+  - 标准层 · 产品 + 标准层 · 工具 → 标准层 lane(task = "核心功能 V7 + AI 辅助上线",统一动作"上线")
+  - 企业层 · 沙龙 + 企业层 · 周边 → 企业层 lane(task = "线下行业沙龙 + 首款周边商业化",原文串联 13 字 ≤ 14 字阈值)
+- 两面 tone 一致性: 已对齐(输入是 balanced 档详情面,演讲面 title tone 与之同步)
+
+### Mock 验证暴露的 prompt 漏洞 + 修补
+
+跑出 mock 后渲染 pptx,**视觉发现 lane.task / outcome 在版式里被截断换行**:
+- 原 mock 标准层 task = "核心功能 V7 迭代 + AI 辅助能力部署"(15 字,超 14 字阈值)→ 版式装不下
+- 原 mock 标准层 outcome = "案例库与知识库就位 → V7 发布 + AI 接管 70% 答疑 → 效果验收"(单段 ≤ 8 字超限)→ 换行
+- 原 mock 企业层 outcome = "策划与量产 → 活动落地 + 全渠道发售 → 复盘归档"(中间段 10 字超限)→ 换行
+
+**修补**: 在 `prompts/rewrite_presentation.md` 规则 4 加字数硬约束:
+- `lane.task` ≤ 14 中文字(中文字符,英文/数字/标点不计;但要尊重视觉总长)
+- `lane.outcome` 单段 ≤ 8 中文字,三段总长 ≤ 26 字
+- 合并 lane 时若 v1 原文串联超字数,**必须改写为统一动作**(例:V7 迭代 + AI 辅助能力部署 → V7 + AI 辅助上线)
+- 若实在压不进,优先保留有数字的那段(数字是事实层的锚)
+
+修补后再跑 mock,所有 lane 单行容纳,无换行截断 ✓
+
+### Mock 验证的事实层一致性核对
+
+逐项过 prompt 模板"两面叙事一致 · 硬约束清单":
+
+- ✓ COVER 全部字段与 v1 一字不差
+- ✓ CLOSING 全部字段与 v1 一字不差
+- ✓ PRODUCT_KEYPOINT.points 三条 head/desc 与 v1 PRODUCT_PROBLEMS.items 一字不差
+- ✓ BRAND_KEYPOINT.points 三条 head/desc 与 v1 BRAND_PROBLEMS.items 一字不差
+- ✓ PRODUCT_MILESTONE.title 与 v1 PRODUCT_Q2.title 完全一致("三事并进")
+- ✓ PRODUCT_MILESTONE.lanes 每个 task 来源于 v1 group.task(允许合并 X + Y)
+- ✓ BRAND_MILESTONE 同上
+- ✓ 演讲面页数 = 6
+
+### Mock 产出 vs 手写 master 差异分析
+
+14 处差异,全部分类:
+
+- **输入差异(11 处)**: content_action_balanced.py 自动 balanced 措辞 vs content_action.py 手写 master 措辞不同
+  - 例:COVER subtitle "标准版守营收" vs "标准版守城" (输入决定,不是 prompt 问题)
+  - 例:PRODUCT_KEYPOINT.points "标准版增长进入平台期" vs "标准版增速进入平台期"
+  - 例:PRODUCT_MILESTONE.title "Q2 三事并进" vs "Q2 三件事打透"
+
+- **Prompt 字数漏洞(3 处)**: 已通过修补关闭
+
+prompt 模板 v2 通过 balanced 档 mock 验证。下一步可以:
+- 跑 internal / external 档 mock 验证
+- 用真实数据(content_real.py)过一遍
+- 发布为 Claude Code Skill
